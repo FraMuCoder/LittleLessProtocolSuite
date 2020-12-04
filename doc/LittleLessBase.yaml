@@ -1,0 +1,70 @@
+shortName:    LittleLessBase
+longName:     Little Less Base
+minVersion:   1
+maxVersion:   1
+description:  |
+              Basic protocol features like compatibility version check or echo service.
+commands:
+    - id:             0
+      shortName:      ver
+      longName:       Version
+      sinceVersion:   1
+      supportedTypes:
+                      - '>'
+                      - '<'
+                      - '#'
+      description:    |
+                      Exchange supported application name and supported protocol version.
+
+                      No other commands should be send before a version was exchanged.
+                      If application name from other side differs or an incompatible version was received no further communication should take place.
+                      Of course new Version commands are still allowed.
+
+                      A Version request ('>') must be answered with a Version result ('<').
+                      A Version update ('#') will be send after internal version changes. Such a change may be triggered by application.
+      structureType:  markdown
+      structure:      |
+                      Example: `>ver:0B:11111134"Test""App":FF`
+                      
+                      For coding of versions see [ToDo]
+
+                      |         Byte | Len |Content
+                      | ------------:| ---:|------------------------------------------------------------------------------------------
+                      |            0 |   1 | Versions of underlying protocol, currently 0x11
+                      |            1 |   1 | Supported versions of sender
+                      |            2 |   1 | Currently agreed versions
+                      |            3 |   1 | Lower nibble: length of application name (n), Higher nibble: length of extra name (m)
+                      |     4..4+n-1 |   n | Application name (max. 15 characters)
+                      | 4+n..4+n+m-1 |   m | Extra name (max. 15 characters)
+                      
+                      Extra name is currently not evaluated. This may be used to name the participant.
+    - id:             1
+      shortName:      ech
+      longName:       Echo
+      sinceVersion:   1
+      supportedTypes:
+                      - '>'
+                      - '<'
+      description:    |
+                      Echoservice to check if the other side is sill there.
+
+                      A Echo request ('>') must be answered with a Echo result ('<').
+                      All data from the request must be copied to the result.
+      structureType:  markdown
+      structure:      |
+                      Example: `>ech:01:AB:FF`
+                      
+                      There is only one data byte which must be copied to the answer.
+    - id:             2
+      shortName:      dbg
+      longName:       Debug
+      sinceVersion:   1
+      supportedTypes:
+                      - '#'
+      description:    |
+                      Use this command to send debug messages.
+      structureType:  markdown
+      structure:      |
+                      Example: `#dbg:0C:"Test message":FF`
+                      
+                      This messages just contains a string. There is no terminating NULL byte.
