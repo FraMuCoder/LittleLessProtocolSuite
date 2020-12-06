@@ -1,0 +1,59 @@
+{# Little Less Protocol Suite - yaml converter
+   Copyright (C) 2020 Frank Mueller
+
+   SPDX-License-Identifier: MIT
+
+   This is a template to generate markdown files to document a protocol.
+#}
+# {{ yaml['shortName'].text }} - {{ yaml['longName'].text }}
+
+{% if yaml['minVersion'] == yaml['maxVersion'] %}
+Supported Version: {{ yaml['minVersion'].text }}
+{% else %}
+Supported Versions: {{ yaml['minVersion'].text }} .. {{ yaml['maxVersion'].text }}
+{% endif %}
+
+{{ yaml['description'].text | md }}
+
+## Commands
+| ID | Short | Long name |
+| --:| ----- | --------- |
+{% for cmd in yaml['commands'] %}
+| [{{ cmd['id'].text }}]({{ cmd | cmd_link }}) | [{{ cmd['shortName'].text }}]({{ cmd | cmd_link }}) | [{{ cmd['longName'].text }}]({{ cmd | cmd_link }}) |
+{% endfor %}
+
+{% for cmd in yaml['commands'] %}
+
+- - -
+
+### {{ cmd | cmd_title }}
+{{ cmd['description'].text | md(3) }}
+
+#### Data structure
+
+{%   for structure in cmd['structures'] %}
+
+- - -
+
+{%     if 'senders' in structure %}
+Senders: {% for sender in structure['senders'] %}{{ sender.text }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+{%     endif %}
+
+{%     if 'receivers' in structure %}
+Receivers: {% for receiver in structure['receivers'] %}{{ receiver.text }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+{%     endif %}
+
+{%     if 'messageTypes' in structure %}
+Message types: {% for types in structure['messageTypes'] %}{{ types.text }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+{%     endif %}
+
+{{+     structure['description'].text | md(4) }}
+
+{%     if structure['structureType'].text == 'markdown' -%}
+{{     structure['structureDesc'].text | md(4) }}
+{%     endif -%}
+{%   endfor -%}
+{% endfor -%}
