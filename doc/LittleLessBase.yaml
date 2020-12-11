@@ -56,7 +56,7 @@ commands:
                                         - '#'
                         structureType:  markdown
                         structureDesc:  |
-                                        Example: `>ver:0B:11111134"Test""App":FF`
+                                        Example: `>ver:0B:11111143"Test""App":FF`
 
                                         | Param          | Len   | Description
                                         | -------------- | -----:|------------------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ commands:
                                         | AppVersions    |     1 | Supported application versions of sender
                                         | AgreedVersions |     1 | Currently agreed versions, this is always <= SenderVersion
                                         | Length         |     1 | Upper nibble: length of AppName (n), Lower nibble: length of AppExtra (m)
-                                        | AppName        | 0..15 | Application name (max. 15 characters)
+                                        | AppName        | 0..15 | Application protocol name (max. 15 characters)
                                         | AppExtra       | 0..15 | Extra name (max. 15 characters)
 
                                         Extra name is currently not evaluated. This may be used to name the participant.

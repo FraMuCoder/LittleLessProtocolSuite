@@ -6,13 +6,13 @@ This repository collects documentations and tools for the Little Less Protocol.
 
 ## What is the Little Less Protocol
 
-Little Less Protocol is a simple serial protocol for little microcontrollers.
+[Little Less Protocol](doc/LittleLessProtocol.md) is a simple serial protocol for little microcontrollers.
 In comparison to other protocols Little Less Protocol uses less buffers and less states.
 Also you application not need full buffers but if you want to use them,
 they are owned by the application, so your application has the full control over it.
 
-There is also a layer for basic protocol handling like check if there is the right communication participant
-and it uses a compatible version of the protocol.
+There is also a layer for basic protocol handling ([Little Less Base](doc/LittleLessBase.md))
+like check if there is the right communication participant and it uses a compatible version of the protocol.
 If you do not need such thinks you can omit this layer.
 
 Because every project needs other data and commands to send you can design you individual protocol.
@@ -58,7 +58,7 @@ Please read the [Little Less Protocol YAML schema](doc/yaml.md) for more informa
 
 To verify you can use `yaml2x.py`. Therefore you need python3 with strictyaml and Jinja2.
 
-On Linux or could call the following commands to install all you need:
+On Linux just call the following commands to install all you need:
 ```bash
 cd <PATH_TO_LITTLE_LESS_PROTOCOL_SUITE>
 python3 -m venv env

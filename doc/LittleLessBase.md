@@ -46,6 +46,16 @@ in a chained communication design.
 - - -
 
 ### ver - Version (0)
+Exchange supported application name and supported protocol versions.
+
+No other commands should be send before a version was exchanged.
+If application name from other side differs or an incompatible version was received no further communication should take place.
+Of course new Version commands are still allowed.
+
+A Version request ('>') must be answered with a Version result ('<').
+A Version update ('#') will be send after internal version changes. Such a change may be triggered by application, e.g.
+if a third participant in a chained communication has sends its versions to a middle participant.
+
 
 #### Data structure
 
@@ -57,7 +67,7 @@ in a chained communication design.
 Message types: >, <, #
 
 
-Example: `>ver:0B:11111134"Test""App":FF`
+Example: `>ver:0B:11111143"Test""App":FF`
 
 | Param          | Len   | Description
 | -------------- | -----:|------------------------------------------------------------------------------------------
@@ -65,7 +75,7 @@ Example: `>ver:0B:11111134"Test""App":FF`
 | AppVersions    |     1 | Supported application versions of sender
 | AgreedVersions |     1 | Currently agreed versions, this is always <= SenderVersion
 | Length         |     1 | Upper nibble: length of AppName (n), Lower nibble: length of AppExtra (m)
-| AppName        | 0..15 | Application name (max. 15 characters)
+| AppName        | 0..15 | Application protocol name (max. 15 characters)
 | AppExtra       | 0..15 | Extra name (max. 15 characters)
 
 Extra name is currently not evaluated. This may be used to name the participant.
@@ -74,6 +84,11 @@ Extra name is currently not evaluated. This may be used to name the participant.
 - - -
 
 ### ech - Echo (1)
+Echoservice to check if the other side is sill there.
+
+A Echo request ('>') must be answered with a Echo result ('<').
+All data from the request must be copied to the result.
+
 
 #### Data structure
 
@@ -93,6 +108,8 @@ There is only one data byte which must be copied to the answer.
 - - -
 
 ### dbg - Debug (2)
+Use this command to send debug messages.
+
 
 #### Data structure
 

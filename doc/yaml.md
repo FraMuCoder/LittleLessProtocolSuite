@@ -93,7 +93,7 @@ command / **description**: You can describe your command here or later for each 
 
 **messages**: The command is send in a message. There could be different types of messages for the same command,
 e.g. the one side send a request and the other side must answer with a response or an error.
-All this message types could have differen data therefore you can list all kinds of messages here.
+All this message types could have different data therefore you can list all kinds of messages here.
 If the data structure differs you should add a new message description.
 If the data structure is identical to all types you can describe this as one message.
 

@@ -27,7 +27,7 @@ Supported Versions: {{ yaml['minVersion'].text }} .. {{ yaml['maxVersion'].text 
 - - -
 
 ### {{ cmd | cmd_title }}
-{% if 'description' in message %}
+{% if 'description' in cmd %}
 {{ cmd['description'].text | md(3) }}
 {% endif %}
 
