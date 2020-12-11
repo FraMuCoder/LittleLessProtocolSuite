@@ -5,22 +5,26 @@
 
    This is a template to generate ino files for Arduino.
 #}
+{# ##########  macro class() #}
 {% macro class() %}
 {{ yaml['name'] | identifier -}}
 {% if not yaml['name'].text.lower().endswith('protocol') %}Protocol{% endif %}
 {{ suffix -}}
 {% endmacro %}
+{# ########## macro instance() #}
 {% macro instance() %}
 {{ yaml['name'] | identifier(true) -}}
 {% if not yaml['name'].text.lower().endswith('protocol') %}Protocol{% endif %}
 {% endmacro %}
+{# ########## macro baseClass() #}
 {% macro baseClass() %}
-  {% if baseProtocol in yaml %}
+  {% if 'baseProtocol' in yaml %}
 {{ yaml['baseProtocol'].value }}{{ suffix -}}
   {% else %}
 LittleLessProtocol{{ suffix -}}
   {% endif %}
 {% endmacro %}
+{# ########## last macro, here we go #}
 #include <LittleLessProtocol.h>
 
 class {{ class() }} : public {{ baseClass() }} {
@@ -35,14 +39,14 @@ public:
   };
 
   {{ class() }}(Stream &stream)
-{% if ('baseProtocol' in ymal) and (yaml['baseProtocol'].value == 'LittleLessBase') %}
+{% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value == 'LittleLessBase') %}
     : {{ baseClass() }}(stream, {{ "0x%x%x" | format(yaml['maxVersion'].value, yaml['minVersion'].value) }})
 {% else %}
     : {{ baseClass() }}(stream)
 {% endif %}
   {}
 
-{% if ('baseProtocol' in ymal) and (yaml['baseProtocol'].value == 'LittleLessBase') %}
+{% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value == 'LittleLessBase') %}
   virtual void getAppName(uint8_t &len, const char **name);
   virtual void getAppExtra(uint8_t &len, const char **extra);
   virtual void handleConStateChanged(bool conState);
@@ -52,17 +56,19 @@ public:
   virtual bool getCmdStr(uint8_t cmdId, char cmd[3]);
   virtual bool canHandleMsg(llp_MsgType msgType, uint8_t cmdId, llp_RxStruct &rx);
   virtual void handleMsgData(llp_MsgType msgType, uint8_t cmdId, llp_RxStruct &rx);
-  virtual void handleMsgFinish(llp_MsgType msgType, uint8_t cmdId, bool msgOK);
+  virtual void handleMsgFinish(llp_MsgType msgType, uint8_t cmdId, llp_result result);
 
 {% for cmd in yaml['commands'] %}
   inline bool canHandle{{ cmd['name'] | identifier }}(llp_MsgType msgType, llp_RxStruct &rx);
   inline void handle{{ cmd['name'] | identifier }}Data(llp_MsgType msgType, llp_RxStruct &rx);
-  inline void handle{{ cmd['name'] | identifier }}Finish(llp_MsgType msgType, bool msgOK);
+  inline void handle{{ cmd['name'] | identifier }}Finish(llp_MsgType msgType, llp_result result);
 {% endfor %}
 
 private:
+{% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value == 'LittleLessBase') %}
   static const char PROTO_NAME[];
   static const char PROTO_EXTRA[];
+{% endif %}
   static const char * const S_CMDS[];
 };
 
@@ -76,7 +82,7 @@ void loop() {
   {{ instance() }}.loop();
 }
 
-{% if ('baseProtocol' in ymal) and (yaml['baseProtocol'].value == 'LittleLessBase') %}
+{% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value == 'LittleLessBase') %}
 
 //////////////////////////////////////////////////
 // LittleLessBase handling
@@ -84,15 +90,6 @@ void loop() {
 
 const char {{ class() }}::PROTO_NAME[]  PROGMEM = "{{ yaml['code'].text }}";
 const char {{ class() }}::PROTO_EXTRA[] PROGMEM = "{{ participant }}";  // ToDo
-
-{% for cmd in yaml['commands'] %}
-static const char CMD_{{ cmd['name'] | upper_identifier }}[3] PROGMEM = "{{ cmd['code'].text }}";
-{% endfor %}
-
-const char * const {{ class() }}::S_CMDS[{{ yaml['commands'] | length }}] PROGMEM = {
-  {%+ for cmd in yaml['commands'] %}CMD_{{ cmd['name'] | upper_identifier }}{% if not loop.last %}, {% endif %}{% endfor %}
-
-};
 
 void {{ class() }}::getAppName(uint8_t &len, const char **name) {
   len = strlen_P(PROTO_NAME);
@@ -119,6 +116,15 @@ void {{ class() }}::handleConStateChanged(bool conState) {
 // Command ID handling
 //////////////////////////////////////////////////
 
+{% for cmd in yaml['commands'] %}
+static const char CMD_{{ cmd['name'] | upper_identifier }}[3] PROGMEM = "{{ cmd['code'].text }}";
+{% endfor %}
+
+const char * const {{ class() }}::S_CMDS[{{ yaml['commands'] | length }}] PROGMEM = {
+  {%+ for cmd in yaml['commands'] %}CMD_{{ cmd['name'] | upper_identifier }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+};
+
 uint8_t {{ class() }}::getCmdId(const char cmd[3]) {
   for (uint8_t i = 0; i < sizeof(S_CMDS)/sizeof(S_CMDS[0]); ++i) {
     char *str = pgm_read_ptr(S_CMDS + i);
@@ -127,7 +133,11 @@ uint8_t {{ class() }}::getCmdId(const char cmd[3]) {
 
     }
   }
+{% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value != 'LittleLessProtocol') %}
   return {{ baseClass() }}::getCmdId(cmd);
+{% else %}
+  return 0xFF;
+{% endif %}
 }
 
 bool {{ class() }}::getCmdStr(uint8_t cmdId, char cmd[3]) {
@@ -138,7 +148,11 @@ bool {{ class() }}::getCmdStr(uint8_t cmdId, char cmd[3]) {
     memcpy_P(cmd, str, 3);
     return true;
   } else {
+  {% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value != 'LittleLessProtocol') %}
     return {{ baseClass() }}::getCmdStr(cmdId, cmd);
+  {% else %}
+    return false;
+  {% endif %}
   }
 }
 
@@ -155,6 +169,8 @@ bool {{ class() }}::canHandleMsg(llp_MsgType msgType, uint8_t cmdId, llp_RxStruc
     default:
     {% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value != 'LittleLessProtocol') %}
       return {{ baseClass() }}::canHandleMsg(msgType, cmdId, rx);
+    {% else %}
+      return false;
     {% endif %}
   }
 }
@@ -172,14 +188,14 @@ void {{ class() }}::handleMsgData(llp_MsgType msgType, uint8_t cmdId, llp_RxStru
   }
 }
 
-void {{ class() }}::handleMsgFinish(llp_MsgType msgType, uint8_t cmdId, bool msgOK) {
+void {{ class() }}::handleMsgFinish(llp_MsgType msgType, uint8_t cmdId, llp_result result) {
   switch (cmdId) {
   {% for cmd in yaml['commands'] %}
-    case cmd::{{ cmd['name'] | identifier }}: handle{{ cmd['name'] | identifier }}Finish(msgType, msgOK); break;
+    case cmd::{{ cmd['name'] | identifier }}: handle{{ cmd['name'] | identifier }}Finish(msgType, result); break;
   {% endfor %}
     default:
     {% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value != 'LittleLessProtocol') %}
-      {{ baseClass() }}::handleMsgFinish(msgType, cmdId, msgOK);
+      {{ baseClass() }}::handleMsgFinish(msgType, cmdId, result);
     {% endif %}
       break;
   }
@@ -230,9 +246,9 @@ void {{ class() }}::handle{{ cmd['name'] | identifier }}Data(llp_MsgType msgType
   // on error set rx.buf = NULL; to call handle{{ cmd['name'] | identifier }}Finish(false)
 }
 
-void {{ class() }}::handle{{ cmd['name'] | identifier }}Finish(llp_MsgType msgType, bool msgOK) {
+void {{ class() }}::handle{{ cmd['name'] | identifier }}Finish(llp_MsgType msgType, llp_result result) {
   // ToDo
-  // if (msgOK) {
+  // if (llp_result::ok == result) {
   //   ..
   // } else {
   //   .. 
