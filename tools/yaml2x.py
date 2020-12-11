@@ -23,8 +23,8 @@ templates_names = {
   'ino' : 'yaml2ino.cpp.jinja2'
 }
 
-schema = Map({"shortName": Str(),
-              "longName":  Str(),
+schema = Map({"name": Str(),
+              "code":  Str(),
               "minVersion":  Int(),
               "maxVersion":  Int(),
               "description": Str(),
@@ -33,18 +33,24 @@ schema = Map({"shortName": Str(),
                   "name": Str(),
                   Optional("description"): Str()
               })),
-              Optional("commands"): Seq(Map({
+              Optional("messageTypes"): Seq(Map({
                   "id": Int(),
-                  "shortName": Str(),
-                  "longName": Str(),
+                  "name": Str(),
+                  "code" : Str(),
+                  Optional("description"): Str()
+              })),
+              "commands": Seq(Map({
+                  "id": Int(),
+                  "name": Str(),
+                  "code": Str(),
                   Optional("sinceVersion"): Int(),
                   Optional("tillVersion"): Int(),
-                  "description": Str(),
-                  "structures": Seq(Map({
+                  Optional("description"): Str(),
+                  "messages": Seq(Map({
                     Optional("senders") : Seq(Str()),
                     Optional("receivers") : Seq(Str()),
                     "messageTypes": UniqueSeq(Enum(['>', '<', '!', '#'])),
-                    "description": Str(),
+                    Optional("description"): Str(),
                     "structureType":  Enum(['md', 'markdown', 'text']),
                     "structureDesc": Str()
                   }))
@@ -61,21 +67,25 @@ def md_filter(value, deep=1):
 	return "".join(lines)
 
 def cmd_title(cmd):
-  return "{} - {} ({})".format(cmd['shortName'].text, cmd['longName'].text, cmd['id'].text)
+  return "{} - {} ({})".format(cmd['code'].text, cmd['name'].text, cmd['id'].text)
 
 def cmd_link(cmd):
   cmd_str = "".join([a.lower() if (a.isalnum()) else '-' if a==' ' else '' for a in cmd_title(cmd)])
   return "#{}".format(cmd_str)
 
 def identifier(s, firstLow=False):
-  strs = re.sub("[^a-zA-Z]", " ", str(s)).split()
+  strs = re.sub("[^a-zA-Z0-9]", " ", str(s)).split()
   strs = [s.capitalize() for s in strs]
   if firstLow:
     strs[0] = strs[0][0].lower() + strs[0][1:]
-  return "".join(strs)
+  ident = "".join(strs)
+  if ident[0].isdigit():
+    return "_" + ident
+  else:
+    return  ident
 
 def upper_identifier(s):
-  return re.sub("[^a-zA-Z]", "_", str(s)).upper()
+  return re.sub("[^a-zA-Z0-9]", "_", str(s)).upper()
 
 def comment(s, commentStr="// "):
   return (commentStr + commentStr.join(s.splitlines(keepends=True))).strip('\n\r')

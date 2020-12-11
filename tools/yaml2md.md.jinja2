@@ -5,7 +5,7 @@
 
    This is a template to generate markdown files to document a protocol.
 #}
-# {{ yaml['shortName'].text }} - {{ yaml['longName'].text }}
+# {{ yaml['code'].text }} - {{ yaml['name'].text }}
 
 {% if yaml['minVersion'] == yaml['maxVersion'] %}
 Supported Version: {{ yaml['minVersion'].text }}
@@ -19,7 +19,7 @@ Supported Versions: {{ yaml['minVersion'].text }} .. {{ yaml['maxVersion'].text 
 | ID | Short | Long name |
 | --:| ----- | --------- |
 {% for cmd in yaml['commands'] %}
-| [{{ cmd['id'].text }}]({{ cmd | cmd_link }}) | [{{ cmd['shortName'].text }}]({{ cmd | cmd_link }}) | [{{ cmd['longName'].text }}]({{ cmd | cmd_link }}) |
+| [{{ cmd['id'].text }}]({{ cmd | cmd_link }}) | [{{ cmd['code'].text }}]({{ cmd | cmd_link }}) | [{{ cmd['name'].text }}]({{ cmd | cmd_link }}) |
 {% endfor %}
 
 {% for cmd in yaml['commands'] %}
@@ -27,33 +27,37 @@ Supported Versions: {{ yaml['minVersion'].text }} .. {{ yaml['maxVersion'].text 
 - - -
 
 ### {{ cmd | cmd_title }}
+{% if 'description' in message %}
 {{ cmd['description'].text | md(3) }}
+{% endif %}
 
 #### Data structure
 
-{%   for structure in cmd['structures'] %}
+  {% for message in cmd['messages'] %}
 
 - - -
 
-{%     if 'senders' in structure %}
-Senders: {% for sender in structure['senders'] %}{{ sender.text }}{% if not loop.last %}, {% endif %}{% endfor %}
+    {% if 'senders' in message %}
+Senders: {% for sender in message['senders'] %}{{ sender.text }}{% if not loop.last %}, {% endif %}{% endfor %}
 
-{%     endif %}
+    {% endif %}
 
-{%     if 'receivers' in structure %}
-Receivers: {% for receiver in structure['receivers'] %}{{ receiver.text }}{% if not loop.last %}, {% endif %}{% endfor %}
+    {% if 'receivers' in message %}
+Receivers: {% for receiver in message['receivers'] %}{{ receiver.text }}{% if not loop.last %}, {% endif %}{% endfor %}
 
-{%     endif %}
+    {% endif %}
 
-{%     if 'messageTypes' in structure %}
-Message types: {% for types in structure['messageTypes'] %}{{ types.text }}{% if not loop.last %}, {% endif %}{% endfor %}
+    {% if 'messageTypes' in message %}
+Message types: {% for types in message['messageTypes'] %}{{ types.text }}{% if not loop.last %}, {% endif %}{% endfor %}
 
-{%     endif %}
+    {% endif %}
 
-{{+     structure['description'].text | md(4) }}
+    {% if 'description' in message %}
+{{ message['description'].text | md(4) }}
+    {% endif %}
 
-{%     if structure['structureType'].text == 'markdown' -%}
-{{     structure['structureDesc'].text | md(4) }}
-{%     endif -%}
-{%   endfor -%}
-{% endfor -%}
+    {% if message['structureType'].text == 'markdown' %}
+{{ message['structureDesc'].text | md(4) }}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
