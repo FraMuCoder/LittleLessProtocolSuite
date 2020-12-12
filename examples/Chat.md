@@ -1,4 +1,4 @@
-# Chat - Chat Example
+# Chat - Chat Protocol
 
 Supported Version: 1
 
@@ -105,11 +105,11 @@ List logged in users.
 
 A typical sequence is:
 
-1. `>:LST:00::FF`
-2. `#:LST:05:"UserA":FF`
-3. `#:LST:05:"UserB":FF`
-4. `#:LST:05:"UserC":FF`
-5. `<:LST:02:0300:FF`
+1. `>LST:00::FF`
+2. `#LST:05:"UserA":FF`
+3. `#LST:05:"UserB":FF`
+4. `#LST:05:"UserC":FF`
+5. `<LST:02:0300:FF`
 
 
 #### Data structure
@@ -158,5 +158,4 @@ Sever finish the client request to list all logged in users.
 | Param  | Length | Description
 | ------ | ------:| -----------
 | count  |      1 | User count (0..255) (binary)
-| result |      1 | 0 => OK, 1 => error (binary)
 

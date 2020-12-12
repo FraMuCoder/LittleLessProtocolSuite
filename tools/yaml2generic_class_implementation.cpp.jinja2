@@ -103,14 +103,14 @@ void {{ cpp.class() }}::handleMsgData(llp_MsgType msgType, uint8_t cmdId, llp_Rx
   }
 }
 
-void {{ cpp.class() }}::handleMsgFinish(llp_MsgType msgType, uint8_t cmdId, llp_result result) {
+void {{ cpp.class() }}::handleMsgFinish(llp_MsgType msgType, uint8_t cmdId, const llp_RxStruct &rx, llp_result result) {
   switch (cmdId) {
   {% for cmd in yaml['commands'] %}
-    case cmd::{{ cmd['name'] | identifier }}: handle{{ cmd['name'] | identifier }}Finish(msgType, result); break;
+    case cmd::{{ cmd['name'] | identifier }}: handle{{ cmd['name'] | identifier }}Finish(msgType, rx, result); break;
   {% endfor %}
     default:
     {% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value != 'LittleLessProtocol') %}
-      {{ cpp.baseClass() }}::handleMsgFinish(msgType, cmdId, result);
+      {{ cpp.baseClass() }}::handleMsgFinish(msgType, cmdId, rx, result);
     {% endif %}
       break;
   }

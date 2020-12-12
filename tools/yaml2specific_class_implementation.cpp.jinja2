@@ -64,10 +64,10 @@ bool {{ cpp.class() }}::canHandle{{ cmd['name'] | identifier }}(llp_MsgType msgT
 
 void {{ cpp.class() }}::handle{{ cmd['name'] | identifier }}Data(llp_MsgType msgType, llp_RxStruct &rx) {
   // ToDo
-  // on error set rx.buf = NULL; to call handle{{ cmd['name'] | identifier }}Finish(false)
+  // on error set rx.buf = NULL; to call handle{{ cmd['name'] | identifier }}Finish(..., llp_result::applicationAbort)
 }
 
-void {{ cpp.class() }}::handle{{ cmd['name'] | identifier }}Finish(llp_MsgType msgType, llp_result result) {
+void {{ cpp.class() }}::handle{{ cmd['name'] | identifier }}Finish(llp_MsgType msgType, const llp_RxStruct &rx, llp_result result) {
   // ToDo
   // if (llp_result::ok == result) {
   //   ..
