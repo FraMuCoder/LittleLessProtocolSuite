@@ -1,0 +1,20 @@
+{% macro class() %}
+{{ yaml['name'] | identifier -}}
+{% if not yaml['name'].text.lower().endswith('protocol') %}Protocol{% endif %}
+{{ suffix -}}
+{% endmacro %}
+
+
+{% macro instance() %}
+{{ yaml['name'] | identifier(true) -}}
+{% if not yaml['name'].text.lower().endswith('protocol') %}Protocol{% endif %}
+{% endmacro %}
+
+
+{% macro baseClass() %}
+  {% if 'baseProtocol' in yaml %}
+{{ yaml['baseProtocol'].value }}{{ suffix -}}
+  {% else %}
+LittleLessProtocol{{ suffix -}}
+  {% endif %}
+{% endmacro %}

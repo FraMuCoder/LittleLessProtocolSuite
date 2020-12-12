@@ -19,8 +19,10 @@ from strictyaml import load, Map, Str, Int, Seq, YAMLError, Optional, Any, Enum,
 from jinja2 import Environment, FileSystemLoader
 
 templates_names = {
-  'md'  : 'yaml2md.md.jinja2',
-  'ino' : 'yaml2ino.cpp.jinja2'
+  'md'        : 'yaml2md.md.jinja2',
+  'ino'       : 'yaml2ino.cpp.jinja2',
+  'ino-main'  : 'yaml2ino-main.cpp.jinja2',
+  'ino-extra' : 'yaml2generic_class_implementation.cpp.jinja2'
 }
 
 schema = Map({"name": Str(),
@@ -118,7 +120,8 @@ def convert(type, context):
 
 def main():
     parser = argparse.ArgumentParser(description='Little Less Protocol yaml converter')
-    parser.add_argument('-a', '--action', help='action, default is verify (ver)', nargs=1, dest='action', choices=['ver', 'md', 'ino'], default=['ver'])
+    parser.add_argument('-a', '--action', help='action, default is verify (ver)', nargs=1, dest='action', 
+                        choices=['ver', 'md', 'ino', 'ino-main', 'ino-extra'], default=['ver'])
     parser.add_argument('-s', '--suffix', help='Protocol suffix, default "A"', nargs='?', dest='suffix', const='', default='A')
     parser.add_argument('-p', '--participant', help='Protocol participant', nargs=1, dest='participant', default=[''])
     parser.add_argument('-i', help='input file', nargs=1, dest='input', default=[sys.stdin], type=argparse.FileType('r'))

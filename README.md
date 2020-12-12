@@ -96,6 +96,16 @@ On Linux just call:
 ./tools/yaml2x.py -a ino -i <PATH_TO_YOUR_YAML_FILE> -o <NEW_INO_FILE>
 ```
 
+You can also split the generated code into two files. One file for the code you don't need to touch
+and one file where you can add your logic.
+
+```
+./tools/yaml2x.py -a ino-main -i <PATH_TO_YOUR_YAML_FILE> -o <NEW_INO_MAIN_FILE>
+./tools/yaml2x.py -a ino-extra -i <PATH_TO_YOUR_YAML_FILE> -o <NEW_INO_EXTRA_FILE>
+```
+
+You only need do edit `<NEW_INO_MAIN_FILE>`.
+
 ### Implement your project
 
 Of course it is up to you to implement the application logic but some tips may follow here later.

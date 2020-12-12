@@ -1,0 +1,52 @@
+{# Little Less Protocol Suite - yaml converter
+   Copyright (C) 2020 Frank Mueller
+
+   SPDX-License-Identifier: MIT
+
+   This is a template to generate ino files for Arduino.
+#}
+{% import 'macros.cpp.jinja2' as cpp with context %}
+class {{ cpp.class() }} : public {{ cpp.baseClass() }} {
+public:
+  struct cmd {
+    enum : uint8_t  {
+    {% for cmd in yaml['commands'] %}
+      {{+ cmd['name'] | identifier }} = {{ cmd['id'].value }}{% if not loop.last %},{% endif %}
+
+    {% endfor %}
+    };
+  };
+
+  {{ cpp.class() }}(Stream &stream)
+{% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value == 'LittleLessBase') %}
+    : {{ cpp.baseClass() }}(stream, {{ "0x%x%x" | format(yaml['maxVersion'].value, yaml['minVersion'].value) }})
+{% else %}
+    : {{ cpp.baseClass() }}(stream)
+{% endif %}
+  {}
+
+{% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value == 'LittleLessBase') %}
+  virtual void getAppName(uint8_t &len, const char **name);
+  virtual void getAppExtra(uint8_t &len, const char **extra);
+  virtual void handleConStateChanged(bool conState);
+
+{% endif %}
+  virtual uint8_t getCmdId(const char cmd[3]);
+  virtual bool getCmdStr(uint8_t cmdId, char cmd[3]);
+  virtual bool canHandleMsg(llp_MsgType msgType, uint8_t cmdId, llp_RxStruct &rx);
+  virtual void handleMsgData(llp_MsgType msgType, uint8_t cmdId, llp_RxStruct &rx);
+  virtual void handleMsgFinish(llp_MsgType msgType, uint8_t cmdId, llp_result result);
+
+{% for cmd in yaml['commands'] %}
+  inline bool canHandle{{ cmd['name'] | identifier }}(llp_MsgType msgType, llp_RxStruct &rx);
+  inline void handle{{ cmd['name'] | identifier }}Data(llp_MsgType msgType, llp_RxStruct &rx);
+  inline void handle{{ cmd['name'] | identifier }}Finish(llp_MsgType msgType, llp_result result);
+{% endfor %}
+
+private:
+{% if ('baseProtocol' in yaml) and (yaml['baseProtocol'].value == 'LittleLessBase') %}
+  static const char PROTO_NAME[];
+  static const char PROTO_EXTRA[];
+{% endif %}
+  static const char * const S_CMDS[];
+};
