@@ -38,9 +38,9 @@ in a chained communication design.
 ## Commands
 | ID | Short | Long name |
 | --:| ----- | --------- |
-| [0](#ver--version-0) | [ver](#ver--version-0) | [Version](#ver--version-0) |
-| [1](#ech--echo-1) | [ech](#ech--echo-1) | [Echo](#ech--echo-1) |
-| [2](#dbg--debug-2) | [dbg](#dbg--debug-2) | [Debug](#dbg--debug-2) |
+| [0](#ver---version-0) | [ver](#ver---version-0) | [Version](#ver---version-0) |
+| [1](#ech---echo-1) | [ech](#ech---echo-1) | [Echo](#ech---echo-1) |
+| [2](#dbg---debug-2) | [dbg](#dbg---debug-2) | [Debug](#dbg---debug-2) |
 
 
 - - -

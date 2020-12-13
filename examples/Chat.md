@@ -8,9 +8,9 @@ Serial chat protocol.
 ## Commands
 | ID | Short | Long name |
 | --:| ----- | --------- |
-| [8](#log--login-8) | [LOG](#log--login-8) | [Login](#log--login-8) |
-| [9](#msg--message-9) | [MSG](#msg--message-9) | [Message](#msg--message-9) |
-| [10](#lst--user-list-10) | [LST](#lst--user-list-10) | [User list](#lst--user-list-10) |
+| [8](#log---login-8) | [LOG](#log---login-8) | [Login](#log---login-8) |
+| [9](#msg---message-9) | [MSG](#msg---message-9) | [Message](#msg---message-9) |
+| [10](#lst---user-list-10) | [LST](#lst---user-list-10) | [User list](#lst---user-list-10) |
 
 
 - - -
