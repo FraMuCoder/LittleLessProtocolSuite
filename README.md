@@ -53,7 +53,7 @@ Little Less Protocol may not fit to your project if...
 
 ### Design your individual protocol
 
-You can use the [Chat protocol](examples/Chat.yaml) as base to design your individual protocol.
+You can use the [Chat protocol](examples/Chat/Chat.yaml) as base to design your individual protocol.
 Please read the [Little Less Protocol YAML schema](doc/yaml.md) for more information.
 
 To verify you can use `yaml2x.py`. Therefore you need python3 with strictyaml and Jinja2.
@@ -84,7 +84,7 @@ On Linux just call:
 ./tools/yaml2x.py -a md -i <PATH_TO_YOUR_YAML_FILE> -o <NEW_MD_FILE>
 ```
 
-Example output: [Chat protocol](examples/Chat.md)
+Example output: [Chat protocol](examples/Chat/Chat.md)
 
 ### Generate the code skeleton for your project
 
